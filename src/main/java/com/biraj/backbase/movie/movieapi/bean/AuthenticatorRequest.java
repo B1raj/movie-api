@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
  * @author birajmishra
  *To be used as an input for authenticator.
  */
-
 @Slf4j
 @Data
 @AllArgsConstructor

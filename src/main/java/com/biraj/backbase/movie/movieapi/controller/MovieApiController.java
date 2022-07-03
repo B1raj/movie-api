@@ -28,6 +28,7 @@ public class MovieApiController {
 
     @Autowired
     RatingService ratingService;
+
     @PostMapping(value = "/login")
     private ResponseEntity<LoginResponse> login(HttpServletRequest request,
                                                 @RequestHeader(value = MovieConstant.UUID) String uuid,
@@ -51,21 +52,30 @@ public class MovieApiController {
                                        @RequestHeader(value = MovieConstant.MOVIE) String movie) {
         Mono<MovieResponse> movieInfo = movieService.getMovieInfo(movie);
 
-
-        return movieInfo.map(m ->ResponseEntity.status(HttpStatus.OK).body(m))
+        return movieInfo.map(m -> ResponseEntity.status(HttpStatus.OK).body(m))
                 .cast(ResponseEntity.class);
     }
 
     @PostMapping(value = "/rating")
     private Mono<ResponseEntity> saveRating(HttpServletRequest request,
-                                       @RequestHeader(value = MovieConstant.UUID) String uuid,
-                                       @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString,
-                                       @RequestHeader(value = MovieConstant.MOVIE) String movie,
+                                            @RequestHeader(value = MovieConstant.UUID) String uuid,
+                                            @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString,
+                                            @RequestHeader(value = MovieConstant.MOVIE) String movie,
                                             @RequestBody RatingRequest rating) {
         AccessToken accessToken = (AccessToken) request.getAttribute(MovieConstant.ACCESS_TOKEN);
         Mono<RatingResponse> ratingResponseMono = ratingService.saveRating(rating.getRating(), accessToken.getPayload().getUserId(), movie);
 
-        return ratingResponseMono.map(m ->ResponseEntity.status(HttpStatus.OK).body(m))
+        return ratingResponseMono.map(m -> ResponseEntity.status(HttpStatus.OK).body(m))
+                .cast(ResponseEntity.class);
+    }
+
+    @GetMapping(value = "/top10")
+    private Mono<ResponseEntity> top10(HttpServletRequest request,
+                                       @RequestHeader(value = MovieConstant.UUID) String uuid,
+                                       @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString) {
+        Mono<Top10MovieResponse> movieInfo = ratingService.getTop10Movies();
+
+        return movieInfo.map(m -> ResponseEntity.status(HttpStatus.OK).body(m))
                 .cast(ResponseEntity.class);
     }
 }

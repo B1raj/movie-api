@@ -1,7 +1,9 @@
 package com.biraj.backbase.movie.movieapi.service;
 
 import com.biraj.backbase.movie.movieapi.bean.ErrorInfo;
+import com.biraj.backbase.movie.movieapi.bean.MovieResponse;
 import com.biraj.backbase.movie.movieapi.bean.RatingResponse;
+import com.biraj.backbase.movie.movieapi.bean.Top10MovieResponse;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
 import com.biraj.backbase.movie.movieapi.constant.MovieErrorCodeConstant;
 import com.biraj.backbase.movie.movieapi.entity.Movies;
@@ -43,4 +45,7 @@ public class RatingService {
         return obj.map(o -> RatingResponse.builder().movieRating(MovieRating.builder().rating(o.getRating()).build()).build());
     }
 
+    public Mono<Top10MovieResponse> getTop10Movies() {
+        return Mono.just(Top10MovieResponse.builder().build());
+    }
 }

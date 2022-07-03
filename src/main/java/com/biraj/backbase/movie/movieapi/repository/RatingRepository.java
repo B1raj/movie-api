@@ -9,7 +9,4 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface RatingRepository extends CrudRepository<MovieRating, Integer> {
-
-
-
 }
