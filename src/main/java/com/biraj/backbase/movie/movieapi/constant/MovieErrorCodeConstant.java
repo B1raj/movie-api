@@ -18,4 +18,6 @@ public interface MovieErrorCodeConstant {
     public static final String UNABLE_TO_AUTHENTICATE = "40101";
     public static final String BAD_REQUEST_EXCEPTION = "40001";
     public static final String BAD_REQUEST = "40002";
+
+
 }

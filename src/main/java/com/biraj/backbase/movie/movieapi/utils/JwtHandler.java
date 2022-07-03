@@ -2,6 +2,7 @@ package com.biraj.backbase.movie.movieapi.utils;
 
 import com.biraj.backbase.movie.movieapi.bean.AccessToken;
 import com.biraj.backbase.movie.movieapi.bean.AccessTokenPayload;
+import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,21 +26,13 @@ public class JwtHandler extends JwtHandlerAdapter<AccessToken> {
 		if(log.isTraceEnabled()){
 			log.trace("AccessTokenJwtHandler : onClaimsJws : start ");
 		}
-		AccessToken accessToken = new AccessToken();
-		accessToken.setHeaders(jws.getHeader());
-		AccessTokenPayload payload =  new AccessTokenPayload();
-		payload.setIssuer(jws.getBody().getIssuer());
-		payload.setIssuedDate(jws.getBody().getIssuedAt());
-		payload.setPartyId(jws.getBody().getSubject());
-		payload.setAudience(jws.getBody().getAudience());
-		payload.setUserId((String)jws.getBody().get("userid"));
-		
-		accessToken.setPayload(payload);
-		if(log.isTraceEnabled()){
-			log.trace("AccessTokenJwtHandler : onClaimsJws : accessToken : "+ accessToken);
-		}
-		
-		return accessToken;
+		AccessTokenPayload payload = AccessTokenPayload.builder().issuer(jws.getBody().getIssuer())
+				.issuedDate(jws.getBody().getIssuedAt())
+				.partyId(jws.getBody().getSubject())
+				.audience(jws.getBody().getAudience())
+				.userId((String)jws.getBody().get(MovieConstant.USERID))
+				.build();
+		return AccessToken.builder().payload(payload).headers(jws.getHeader()).build();
 	}
 	
 }

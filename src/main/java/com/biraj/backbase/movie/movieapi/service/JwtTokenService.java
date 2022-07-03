@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.biraj.backbase.movie.movieapi.bean.AccessToken;
 import com.biraj.backbase.movie.movieapi.bean.AccessTokenPayload;
+import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
 import com.biraj.backbase.movie.movieapi.constant.MovieErrorCodeConstant;
 import com.biraj.backbase.movie.movieapi.exception.AccessTokenException;
 import com.biraj.backbase.movie.movieapi.utils.DateUtil;
@@ -63,7 +64,7 @@ public class JwtTokenService {
 		claims.setIssuedAt(accessTokenPayload.getIssuedDate());
 		claims.setSubject(accessTokenPayload.getPartyId());
 		claims.setAudience(accessTokenPayload.getAudience());
-		claims.put("userId",accessTokenPayload.getUserId());
+		claims.put(MovieConstant.USERID,accessTokenPayload.getUserId());
 		String accessToken = generateTokens(claims, secret);
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("JwtTokenUtil : generateAccessToken : accessToken : " + accessToken);

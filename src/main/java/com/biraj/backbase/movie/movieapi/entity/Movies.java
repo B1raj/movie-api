@@ -21,7 +21,7 @@ import java.util.Set;
 public class Movies {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	private Integer id;
 	@Column(nullable = false)
 	private int releaseYear;
 	@Column(nullable = false)

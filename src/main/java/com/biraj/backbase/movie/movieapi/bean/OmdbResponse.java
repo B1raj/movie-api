@@ -363,7 +363,8 @@ public class OmdbResponse {
         "Value"
 })
 @Generated("jsonschema2pojo")
- class Rating {
+
+class Rating {
 
     @JsonProperty("Source")
     private String source;
