@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,5 +30,5 @@ public class Movies {
 	@Column(nullable = false)
 	private String category;
 	@OneToMany(mappedBy="movie")
-	private Set<Rating> ratings;
+	private Set<MovieRating> movieRatings;
 }

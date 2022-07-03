@@ -5,7 +5,7 @@ import com.biraj.backbase.movie.movieapi.bean.RatingResponse;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
 import com.biraj.backbase.movie.movieapi.constant.MovieErrorCodeConstant;
 import com.biraj.backbase.movie.movieapi.entity.Movies;
-import com.biraj.backbase.movie.movieapi.entity.Rating;
+import com.biraj.backbase.movie.movieapi.entity.MovieRating;
 import com.biraj.backbase.movie.movieapi.entity.Users;
 import com.biraj.backbase.movie.movieapi.repository.MovieRepository;
 import com.biraj.backbase.movie.movieapi.repository.RatingRepository;
@@ -31,19 +31,16 @@ public class RatingService {
     @Autowired
     RatingRepository ratingRepository;
 
-    public Rating saveRating(double rating, String userId, String name) {
+    public Mono<RatingResponse> saveRating(double rating, String userId, String name) {
         Users user = userRepository.findByUserId(userId).get();
         Optional<Movies> movie = movieRepository.findByName(name);
-        return movie.map(movies -> ratingRepository.save(Rating.builder().user(user).movie(movies).rating(rating).build())).orElseGet(() -> Rating.builder().build());
-    }
-
-    public Mono<RatingResponse> createRatingResponse(Rating rating) {
-
-        if (null == rating.getId()) {
-            return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
+        if (movie.isEmpty()) {
+           return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
                     .errorMessage(MovieConstant.CANNOT_SAVE_RATING)
                     .errorCode(MovieErrorCodeConstant.BAD_REQUEST).build()).build());
         }
-        return Mono.just(RatingResponse.builder().rating(rating).build());
+        Mono<MovieRating> obj = Mono.just(ratingRepository.save(MovieRating.builder().user(user).movie(movie.get()).rating(rating).build()));
+        return obj.map(o -> RatingResponse.builder().movieRating(MovieRating.builder().rating(o.getRating()).build()).build());
     }
+
 }

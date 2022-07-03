@@ -1,5 +1,6 @@
 package com.biraj.backbase.movie.movieapi.bean;
 
+import com.biraj.backbase.movie.movieapi.entity.MovieRating;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,6 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public class RatingResponse {
-    private com.biraj.backbase.movie.movieapi.entity.Rating rating;
+    private MovieRating movieRating;
     private ErrorInfo errorInfo;
 }

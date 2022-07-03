@@ -2,7 +2,6 @@ package com.biraj.backbase.movie.movieapi.controller;
 
 import com.biraj.backbase.movie.movieapi.bean.*;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
-import com.biraj.backbase.movie.movieapi.entity.Rating;
 import com.biraj.backbase.movie.movieapi.service.AccessFactory;
 import com.biraj.backbase.movie.movieapi.service.AuthenticatorService;
 import com.biraj.backbase.movie.movieapi.service.MovieService;
@@ -64,7 +63,7 @@ public class MovieApiController {
                                        @RequestHeader(value = MovieConstant.MOVIE) String movie,
                                             @RequestBody RatingRequest rating) {
         AccessToken accessToken = (AccessToken) request.getAttribute(MovieConstant.ACCESS_TOKEN);
-        Mono<RatingResponse> ratingResponseMono = ratingService.createRatingResponse(ratingService.saveRating(rating.getRating(), accessToken.getPayload().getUserId(), movie));
+        Mono<RatingResponse> ratingResponseMono = ratingService.saveRating(rating.getRating(), accessToken.getPayload().getUserId(), movie);
 
         return ratingResponseMono.map(m ->ResponseEntity.status(HttpStatus.OK).body(m))
                 .cast(ResponseEntity.class);
