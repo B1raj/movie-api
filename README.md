@@ -1,1 +1,1 @@
-# simply-auth
+# movie-api
