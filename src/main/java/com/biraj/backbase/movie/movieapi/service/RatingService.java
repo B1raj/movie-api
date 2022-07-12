@@ -1,9 +1,6 @@
 package com.biraj.backbase.movie.movieapi.service;
 
-import com.biraj.backbase.movie.movieapi.bean.ErrorInfo;
-import com.biraj.backbase.movie.movieapi.bean.MovieResponse;
-import com.biraj.backbase.movie.movieapi.bean.RatingResponse;
-import com.biraj.backbase.movie.movieapi.bean.Top10MovieResponse;
+import com.biraj.backbase.movie.movieapi.bean.*;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
 import com.biraj.backbase.movie.movieapi.constant.MovieErrorCodeConstant;
 import com.biraj.backbase.movie.movieapi.entity.Movies;
@@ -14,10 +11,16 @@ import com.biraj.backbase.movie.movieapi.repository.RatingRepository;
 import com.biraj.backbase.movie.movieapi.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
+import java.util.*;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -33,19 +36,68 @@ public class RatingService {
     @Autowired
     RatingRepository ratingRepository;
 
+    @Autowired
+    MovieService movieService;
+
+    @Value("${api.top:10}")
+    int top;
+
+    /*
+    Save Rating or update the Rating if already exists
+     */
     public Mono<RatingResponse> saveRating(double rating, String userId, String name) {
-        Users user = userRepository.findByUserId(userId).get();
+        Optional<Users> user = userRepository.findByUserId(userId);
+        if (user.isEmpty()) {
+            return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
+                    .errorMessage(MovieConstant.CANNOT_SAVE_RATING_USER_DOESNOT_EXIST)
+                    .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
+        }
         Optional<Movies> movie = movieRepository.findByName(name);
         if (movie.isEmpty()) {
-           return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
-                    .errorMessage(MovieConstant.CANNOT_SAVE_RATING)
-                    .errorCode(MovieErrorCodeConstant.BAD_REQUEST).build()).build());
+            return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
+                    .errorMessage(MovieConstant.CANNOT_SAVE_RATING_MOVIE_NAME_INCORRECT)
+                    .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
         }
-        Mono<MovieRating> obj = Mono.just(ratingRepository.save(MovieRating.builder().user(user).movie(movie.get()).rating(rating).build()));
+        Movies m = movie.get();
+        Users u = user.get();
+        Optional<MovieRating> ratedMovieOptional = ratingExists(m, u);
+        Mono<MovieRating> obj;
+        if (ratedMovieOptional.isEmpty()) {
+            obj = Mono.just(ratingRepository.save(MovieRating.builder().user(u).movie(m).rating(rating).build()));
+        } else {
+            MovieRating ratedMovie = ratedMovieOptional.get();
+            ratedMovie.setRating(rating);
+            obj = Mono.just(ratingRepository.save(ratedMovie));
+        }
         return obj.map(o -> RatingResponse.builder().movieRating(MovieRating.builder().rating(o.getRating()).build()).build());
     }
 
-    public Mono<Top10MovieResponse> getTop10Movies() {
-        return Mono.just(Top10MovieResponse.builder().build());
+    private Optional<MovieRating> ratingExists(Movies movie, Users userId) {
+        return ratingRepository.findByMovieAndUser(movie, userId);
+    }
+
+    public List<TopMovies> getTop10Movies() {
+        Optional<List<TopMovies>> objectStringMap = ratingRepository.findTop10ByRating();
+        if (objectStringMap.isPresent()) {
+            List<TopMovies> movies = objectStringMap.get();
+
+            movies.stream().filter(distinctByName(TopMovies::getName)).limit(top).forEach(movie -> {
+                movie.setCollection(getCollection(movie.getName()));
+            });
+            return movies.stream().sorted((o1, o2) -> o2.getCollection().compareTo(o1.getCollection())).collect(Collectors.toList());
+
+        }
+        log.error("Empty top 10 movies returned from db.");
+        return List.of();
+    }
+
+    private static <T> Predicate<T> distinctByName(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
+    }
+
+    private Long getCollection(String movie) {
+        MovieResponse movieInfo = movieService.getMovieInfo(movie).block();
+        return movieInfo.getBoxOfficeCollection();
     }
 }

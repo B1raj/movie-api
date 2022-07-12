@@ -19,8 +19,8 @@ import java.io.Serializable;
 public class MovieRating implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     //@JsonIgnore
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)

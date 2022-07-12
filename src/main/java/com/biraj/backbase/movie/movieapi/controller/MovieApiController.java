@@ -2,6 +2,7 @@ package com.biraj.backbase.movie.movieapi.controller;
 
 import com.biraj.backbase.movie.movieapi.bean.*;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
+import com.biraj.backbase.movie.movieapi.entity.MovieRating;
 import com.biraj.backbase.movie.movieapi.service.AccessFactory;
 import com.biraj.backbase.movie.movieapi.service.AuthenticatorService;
 import com.biraj.backbase.movie.movieapi.service.MovieService;
@@ -11,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -71,10 +75,10 @@ public class MovieApiController {
 
     @GetMapping(value = "/top10")
     private Mono<ResponseEntity> top10(HttpServletRequest request,
-                                       @RequestHeader(value = MovieConstant.UUID) String uuid,
-                                       @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString) {
-        Mono<Top10MovieResponse> movieInfo = ratingService.getTop10Movies();
-
+                                                  @RequestHeader(value = MovieConstant.UUID) String uuid,
+                                                  @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString) {
+        List<TopMovies> top10Movies = ratingService.getTop10Movies();
+        Mono<List<TopMovies>> movieInfo = Mono.just(top10Movies);
         return movieInfo.map(m -> ResponseEntity.status(HttpStatus.OK).body(m))
                 .cast(ResponseEntity.class);
     }

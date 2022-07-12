@@ -25,4 +25,5 @@ public class MovieResponse {
 	private Boolean isOscarAwarded;
 	private String category;
 	private ErrorInfo errorInfo;
+	private Long boxOfficeCollection;
 	}

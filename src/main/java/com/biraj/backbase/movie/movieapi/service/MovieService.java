@@ -38,6 +38,7 @@ public class MovieService {
     MovieRepository movieRepository;
 
     public Mono<MovieResponse> getMovieInfo(String name) {
+        System.out.println("---------------------------------- name "+ name);
         return WebClient.create(url)
                 .method(HttpMethod.GET)
                 .uri(builder -> builder
@@ -47,8 +48,7 @@ public class MovieService {
                 .retrieve()
                 .onStatus(HttpStatus::isError, response -> {
                     log.error("OMDB api call resulted in error");
-                    return Mono.error(new
-                            BadRequestException(MovieErrorCodeConstant.BAD_REQUEST, MovieConstant.BAD_REQUEST));
+                    return Mono.error(new BadRequestException(MovieErrorCodeConstant.BAD_REQUEST, MovieConstant.BAD_REQUEST));
                 }).toEntity(OmdbResponse.class)
                 .map(OmdbResponse -> {
                     if (!isAMovie(name, OmdbResponse)) {
@@ -61,10 +61,19 @@ public class MovieService {
                                 .name(name)
                                 .isOscarAwarded(movie.get().isAwarded())
                                 .category(movie.get().getCategory())
+                                .boxOfficeCollection(toNumber((OmdbResponse.getBody()).getBoxOffice()))
                                 .build();
                     }
                     return getInvalidMovieResponse(name);
                 });
+    }
+
+    private Long toNumber(String boxOffice) {
+        if((null != boxOffice && boxOffice.trim().length()>0) ){
+            if(boxOffice.trim().equals("N/A")) return 0L;
+            return Long.parseLong( boxOffice.replaceAll(",","").replaceFirst("\\$",""));
+        }
+    return 0L;
     }
 
     private boolean isAMovie(String name, ResponseEntity<OmdbResponse> OmdbResponse) {
