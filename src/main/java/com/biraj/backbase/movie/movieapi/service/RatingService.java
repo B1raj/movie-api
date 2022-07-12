@@ -12,6 +12,8 @@ import com.biraj.backbase.movie.movieapi.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -77,13 +79,14 @@ public class RatingService {
     }
 
     public List<TopMovies> getTop10Movies() {
-        Optional<List<TopMovies>> objectStringMap = ratingRepository.findTop10ByRating();
+        Pageable firstPageWithTenElements = PageRequest.of(0, top);
+        Optional<List<TopMovies>> objectStringMap = ratingRepository.findTopNByRating(firstPageWithTenElements);
         if (objectStringMap.isPresent()) {
             List<TopMovies> movies = objectStringMap.get();
-            movies.stream().limit(top).forEach(movie->{
-                movie.setCollection(getCollection(movie.getName(),movie.getReleaseYear()));
+            movies.stream().forEach(movie->{
+                movie.setBoxOfficeCollection(getCollection(movie.getName(),movie.getReleaseYear()));
             });
-          return movies.stream().limit(top).sorted((o1, o2) -> o2.getCollection().compareTo(o1.getCollection())).collect(Collectors.toList());
+          return movies.stream().sorted((o1, o2) -> o2.getBoxOfficeCollection().compareTo(o1.getBoxOfficeCollection())).collect(Collectors.toList());
         }
         log.error("Empty top 10 movies returned from db.");
         return List.of();

@@ -1,6 +1,5 @@
 package com.biraj.backbase.movie.movieapi.bean;
 
-import com.biraj.backbase.movie.movieapi.entity.Movies;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,7 @@ public
 class TopMovies{
     private String name;
     private double rating;
-    private Long collection;
+    private Long boxOfficeCollection;
     private int releaseYear;
 
     public TopMovies(String name, double rating, int releaseYear) {
