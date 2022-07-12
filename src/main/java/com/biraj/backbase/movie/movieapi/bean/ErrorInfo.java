@@ -1,8 +1,5 @@
 package com.biraj.backbase.movie.movieapi.bean;
 
-import java.io.Serializable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ErrorInfo {
 	private String errorCode;
 	private String errorMessage;
+
+	public String toString() {
+	return "{ \"errorCode\": " + this.getErrorCode()+", \"errorMessage\": " + "\""+ this.getErrorMessage() +"\"}";
+
+	}
 }

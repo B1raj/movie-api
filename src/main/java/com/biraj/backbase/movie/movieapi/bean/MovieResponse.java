@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MovieResponse {
     private String name;
+    private int year;
 	private Award[] awards;
     private ErrorInfo errorInfo;
     private Long boxOfficeCollection;

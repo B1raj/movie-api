@@ -71,7 +71,7 @@ public class RatingService {
             ratedMovie.setRating(rating.getRating());
             obj = Mono.just(ratingRepository.save(ratedMovie));
         }
-        return obj.map(o -> RatingResponse.builder().movieRating(MovieRating.builder().rating(o.getRating()).build()).build());
+        return obj.map(o -> RatingResponse.builder().rating(o.getRating()).movie(rating.getMovie()).year(rating.getYear()).build());
     }
 
     private Optional<MovieRating> ratingExists(Movies movie, Users userId) {

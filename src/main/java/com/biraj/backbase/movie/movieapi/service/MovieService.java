@@ -62,6 +62,7 @@ public class MovieService {
                         return MovieResponse.builder()
                                 .name(name).awards(new Award[]{Award.builder().isAwarded(movie.get().isAwarded()).category(movie.get().getCategory()).build()})
                                 .boxOfficeCollection(toNumber((OmdbResponse.getBody()).getBoxOffice()))
+                                .year(year)
                                 .build();
                     }
                     return getInvalidMovieResponse(name);
