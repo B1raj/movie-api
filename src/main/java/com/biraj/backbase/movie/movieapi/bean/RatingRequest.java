@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RatingRequest {
     private  double rating;
+    private  int year;
+    private String movie;
 }

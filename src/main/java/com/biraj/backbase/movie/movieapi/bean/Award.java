@@ -6,20 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * @author birajmishra
- * Response of login
- */
-
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MovieResponse {
-    private String name;
-	private Award[] awards;
-    private ErrorInfo errorInfo;
-    private Long boxOfficeCollection;
+public class Award {
+    private Boolean isAwarded;
+    private String category;
 }

@@ -53,8 +53,9 @@ public class MovieApiController {
     private Mono<ResponseEntity> movie(HttpServletRequest request,
                                        @RequestHeader(value = MovieConstant.UUID) String uuid,
                                        @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString,
-                                       @RequestHeader(value = MovieConstant.MOVIE) String movie) {
-        Mono<MovieResponse> movieInfo = movieService.getMovieInfo(movie);
+                                       @RequestHeader(value = MovieConstant.MOVIE) String movie,
+                                       @RequestHeader(value = MovieConstant.YEAR) int year) {
+        Mono<MovieResponse> movieInfo = movieService.getMovieInfo(movie,year);
 
         return movieInfo.map(m -> ResponseEntity.status(HttpStatus.OK).body(m))
                 .cast(ResponseEntity.class);
@@ -64,10 +65,9 @@ public class MovieApiController {
     private Mono<ResponseEntity> saveRating(HttpServletRequest request,
                                             @RequestHeader(value = MovieConstant.UUID) String uuid,
                                             @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString,
-                                            @RequestHeader(value = MovieConstant.MOVIE) String movie,
                                             @RequestBody RatingRequest rating) {
         AccessToken accessToken = (AccessToken) request.getAttribute(MovieConstant.ACCESS_TOKEN);
-        Mono<RatingResponse> ratingResponseMono = ratingService.saveRating(rating.getRating(), accessToken.getPayload().getUserId(), movie);
+        Mono<RatingResponse> ratingResponseMono = ratingService.saveRating(rating, accessToken.getPayload().getUserId());
 
         return ratingResponseMono.map(m -> ResponseEntity.status(HttpStatus.OK).body(m))
                 .cast(ResponseEntity.class);

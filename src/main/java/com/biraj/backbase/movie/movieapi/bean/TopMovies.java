@@ -18,10 +18,12 @@ class TopMovies{
     private String name;
     private double rating;
     private Long collection;
+    private int releaseYear;
 
-    public TopMovies(String name, double rating) {
+    public TopMovies(String name, double rating, int releaseYear) {
         this.name = name;
         this.rating = rating;
+        this.releaseYear = releaseYear;
     }
 
 

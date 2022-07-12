@@ -45,14 +45,14 @@ public class RatingService {
     /*
     Save Rating or update the Rating if already exists
      */
-    public Mono<RatingResponse> saveRating(double rating, String userId, String name) {
+    public Mono<RatingResponse> saveRating(RatingRequest rating, String userId) {
         Optional<Users> user = userRepository.findByUserId(userId);
         if (user.isEmpty()) {
             return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
                     .errorMessage(MovieConstant.CANNOT_SAVE_RATING_USER_DOESNOT_EXIST)
                     .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
         }
-        Optional<Movies> movie = movieRepository.findByName(name);
+        Optional<Movies> movie = movieRepository.findByNameAndReleaseYear(rating.getMovie(),rating.getYear());
         if (movie.isEmpty()) {
             return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
                     .errorMessage(MovieConstant.CANNOT_SAVE_RATING_MOVIE_NAME_INCORRECT)
@@ -63,10 +63,10 @@ public class RatingService {
         Optional<MovieRating> ratedMovieOptional = ratingExists(m, u);
         Mono<MovieRating> obj;
         if (ratedMovieOptional.isEmpty()) {
-            obj = Mono.just(ratingRepository.save(MovieRating.builder().user(u).movie(m).rating(rating).build()));
+            obj = Mono.just(ratingRepository.save(MovieRating.builder().user(u).movie(m).rating(rating.getRating()).build()));
         } else {
             MovieRating ratedMovie = ratedMovieOptional.get();
-            ratedMovie.setRating(rating);
+            ratedMovie.setRating(rating.getRating());
             obj = Mono.just(ratingRepository.save(ratedMovie));
         }
         return obj.map(o -> RatingResponse.builder().movieRating(MovieRating.builder().rating(o.getRating()).build()).build());
@@ -80,12 +80,10 @@ public class RatingService {
         Optional<List<TopMovies>> objectStringMap = ratingRepository.findTop10ByRating();
         if (objectStringMap.isPresent()) {
             List<TopMovies> movies = objectStringMap.get();
-
-            movies.stream().filter(distinctByName(TopMovies::getName)).limit(top).forEach(movie -> {
-                movie.setCollection(getCollection(movie.getName()));
+            movies.stream().limit(top).forEach(movie->{
+                movie.setCollection(getCollection(movie.getName(),movie.getReleaseYear()));
             });
-            return movies.stream().sorted((o1, o2) -> o2.getCollection().compareTo(o1.getCollection())).collect(Collectors.toList());
-
+          return movies.stream().limit(top).sorted((o1, o2) -> o2.getCollection().compareTo(o1.getCollection())).collect(Collectors.toList());
         }
         log.error("Empty top 10 movies returned from db.");
         return List.of();
@@ -96,8 +94,8 @@ public class RatingService {
         return t -> seen.add(keyExtractor.apply(t));
     }
 
-    private Long getCollection(String movie) {
-        MovieResponse movieInfo = movieService.getMovieInfo(movie).block();
-        return movieInfo.getBoxOfficeCollection();
+    private Long getCollection(String movie, int year) {
+        Long amount = (Long) movieService.getBoxOfficeCollection(movie,year).block();
+        return  amount;
     }
 }

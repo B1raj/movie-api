@@ -18,10 +18,8 @@ import java.util.Optional;
 @Repository
 public interface RatingRepository extends CrudRepository<MovieRating, Integer> {
     Optional<MovieRating> findByMovieAndUser(Movies movie, Users user);
-
+//TODO: get only 10 recods from db
     //@Query(value = "SELECT M.NAME, AVG(RATING) AS RATING FROM MOVIE_RATING MR INNER JOIN MOVIES M ON M.ID=MR.MOVIE_ID GROUP BY M.NAME", nativeQuery = true)
-    @Query("SELECT new com.biraj.backbase.movie.movieapi.bean.TopMovies(m.name,AVG(mr.rating)) FROM MovieRating AS mr INNER JOIN Movies AS m on m.id=mr.movie GROUP BY m.name")
+    @Query("SELECT new com.biraj.backbase.movie.movieapi.bean.TopMovies(m.name,AVG(mr.rating),m.releaseYear) FROM MovieRating AS mr INNER JOIN Movies AS m on m.id=mr.movie GROUP BY m.name ORDER BY AVG(mr.rating) DESC")
     Optional<List<TopMovies>> findTop10ByRating();
 }
-
-//SELECT M.NAME , AVG(RATING)  AS RATING FROM MOVIE_RATING MR  INNER JOIN MOVIES M ON M.ID=MR.MOVIE_ID GROUP BY M.NAME

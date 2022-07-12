@@ -1,5 +1,6 @@
 package com.biraj.backbase.movie.movieapi.service;
 
+import com.biraj.backbase.movie.movieapi.bean.Award;
 import com.biraj.backbase.movie.movieapi.bean.ErrorInfo;
 import com.biraj.backbase.movie.movieapi.bean.MovieResponse;
 import com.biraj.backbase.movie.movieapi.bean.OmdbResponse;
@@ -26,9 +27,9 @@ import java.util.Optional;
 @Slf4j
 public class MovieService {
 
-    @Value("${api.key}")
+    @Value("${api.key:12ea989a}")
     String apikey;
-    @Value("${omdb.url}")
+    @Value("${omdb.url:https://omdbapi.com}")
     String url;
 
     @Value("${omdb.api.timeout:10}")
@@ -37,12 +38,13 @@ public class MovieService {
     @Autowired
     MovieRepository movieRepository;
 
-    public Mono<MovieResponse> getMovieInfo(String name) {
-        System.out.println("---------------------------------- name "+ name);
+    public Mono<MovieResponse> getMovieInfo(String name, int year) {
+        System.out.println("---------------------------------- name " + name);
         return WebClient.create(url)
                 .method(HttpMethod.GET)
                 .uri(builder -> builder
                         .queryParam("t", name)
+                        .queryParam("y", year)
                         .queryParam("apikey", apikey)
                         .build())
                 .retrieve()
@@ -51,16 +53,14 @@ public class MovieService {
                     return Mono.error(new BadRequestException(MovieErrorCodeConstant.BAD_REQUEST, MovieConstant.BAD_REQUEST));
                 }).toEntity(OmdbResponse.class)
                 .map(OmdbResponse -> {
-                    if (!isAMovie(name, OmdbResponse)) {
+                    if (!isAValidMovie(name, year, OmdbResponse)) {
                         return getInvalidMovieResponse(name);
                     }
                     //valid movie since it is present in omdb,check in DB now
-                    Optional<Movies> movie = movieRepository.findByName(name);
+                    Optional<Movies> movie = movieRepository.findByNameAndReleaseYear(name, year);
                     if (movie.isPresent()) {
                         return MovieResponse.builder()
-                                .name(name)
-                                .isOscarAwarded(movie.get().isAwarded())
-                                .category(movie.get().getCategory())
+                                .name(name).awards(new Award[]{Award.builder().isAwarded(movie.get().isAwarded()).category(movie.get().getCategory()).build()})
                                 .boxOfficeCollection(toNumber((OmdbResponse.getBody()).getBoxOffice()))
                                 .build();
                     }
@@ -68,18 +68,42 @@ public class MovieService {
                 });
     }
 
-    private Long toNumber(String boxOffice) {
-        if((null != boxOffice && boxOffice.trim().length()>0) ){
-            if(boxOffice.trim().equals("N/A")) return 0L;
-            return Long.parseLong( boxOffice.replaceAll(",","").replaceFirst("\\$",""));
-        }
-    return 0L;
+    public Mono<Object> getBoxOfficeCollection(String name, int year) {
+        System.out.println("---------------------------------- name " + name);
+        return WebClient.create(url)
+                .method(HttpMethod.GET)
+                .uri(builder -> builder
+                        .queryParam("t", name)
+                        .queryParam("y", year)
+                        .queryParam("apikey", apikey)
+                        .build())
+                .retrieve()
+                .onStatus(HttpStatus::isError, response -> {
+                    log.error("OMDB api call resulted in error");
+                    return Mono.error(new BadRequestException(MovieErrorCodeConstant.BAD_REQUEST, MovieConstant.BAD_REQUEST));
+                }).toEntity(OmdbResponse.class)
+                .map(OmdbResponse -> {
+                    return toNumber(OmdbResponse.getBody().getBoxOffice());
+                });
     }
 
-    private boolean isAMovie(String name, ResponseEntity<OmdbResponse> OmdbResponse) {
+    public Long toNumber(String boxOffice) {
+        if ((null != boxOffice && boxOffice.trim().length() > 0)) {
+            if (boxOffice.trim().equals("N/A")) return 0L;
+            long value = Long.parseLong(boxOffice.replaceAll(",", "").replaceFirst("\\$", ""));
+            return value;
+        }
+        return 0L;
+    }
+
+
+    private boolean isAValidMovie(String name, int year, ResponseEntity<OmdbResponse> OmdbResponse) {
         return Objects.requireNonNull(OmdbResponse.getBody())
                 .getResponse()
-                .equalsIgnoreCase("True") && OmdbResponse.getBody().getTitle().equals(name);
+                .equalsIgnoreCase("True")
+                && OmdbResponse.getBody().getTitle().equals(name)
+                && OmdbResponse.getBody().getType().equals("movie")
+                && (String.valueOf(year).equals(OmdbResponse.getBody().getYear()));
     }
 
     private MovieResponse getInvalidMovieResponse(String name) {

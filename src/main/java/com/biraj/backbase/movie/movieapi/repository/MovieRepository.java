@@ -16,4 +16,5 @@ import java.util.Optional;
 public interface MovieRepository extends CrudRepository<Movies, Integer> {
 
     Optional<Movies> findByName(String name);
+    Optional<Movies> findByNameAndReleaseYear(String name, int year);
 }
