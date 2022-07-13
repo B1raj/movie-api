@@ -69,7 +69,8 @@ public class MovieService {
                 });
     }
 
-    public Mono<Object> getBoxOfficeCollection(String name, int year) {
+
+    public Long getBoxOfficeCollection(String name, int year) {
         System.out.println("---------------------------------- name " + name);
         return WebClient.create(url)
                 .method(HttpMethod.GET)
@@ -85,7 +86,7 @@ public class MovieService {
                 }).toEntity(OmdbResponse.class)
                 .map(OmdbResponse -> {
                     return toNumber(OmdbResponse.getBody().getBoxOffice());
-                });
+                }).block();
     }
 
     public Long toNumber(String boxOffice) {

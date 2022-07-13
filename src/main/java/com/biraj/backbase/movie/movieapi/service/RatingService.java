@@ -98,7 +98,6 @@ public class RatingService {
     }
 
     private Long getCollection(String movie, int year) {
-        Long amount = (Long) movieService.getBoxOfficeCollection(movie,year).block();
-        return  amount;
+        return movieService.getBoxOfficeCollection(movie,year);
     }
 }
