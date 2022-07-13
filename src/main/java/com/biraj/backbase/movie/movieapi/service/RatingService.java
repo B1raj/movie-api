@@ -83,7 +83,7 @@ public class RatingService {
         Optional<List<TopMovies>> objectStringMap = ratingRepository.findTopNByRating(firstPageWithTenElements);
         if (objectStringMap.isPresent()) {
             List<TopMovies> movies = objectStringMap.get();
-            movies.stream().forEach(movie->{
+            movies.forEach(movie->{
                 movie.setBoxOfficeCollection(getCollection(movie.getName(),movie.getReleaseYear()));
             });
           return movies.stream().sorted((o1, o2) -> o2.getBoxOfficeCollection().compareTo(o1.getBoxOfficeCollection())).collect(Collectors.toList());
