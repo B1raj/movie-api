@@ -28,7 +28,6 @@ public class JwtHandler extends JwtHandlerAdapter<AccessToken> {
 		}
 		AccessTokenPayload payload = AccessTokenPayload.builder().issuer(jws.getBody().getIssuer())
 				.issuedDate(jws.getBody().getIssuedAt())
-				.partyId(jws.getBody().getSubject())
 				.audience(jws.getBody().getAudience())
 				.userId((String)jws.getBody().get(MovieConstant.USERID))
 				.build();

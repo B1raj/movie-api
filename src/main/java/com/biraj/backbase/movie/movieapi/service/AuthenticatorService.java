@@ -27,6 +27,14 @@ public class AuthenticatorService {
 	@Autowired
 	UserRepository userRepository;
 
+	/**
+	 * validate user from db
+	 * @param authorization
+	 * @return
+	 * @throws AuthenticationException
+	 * @throws BadRequestException
+	 */
+
 	public AuthenticatorResponse authenticate(String authorization)
 			throws AuthenticationException, BadRequestException {
 		if (log.isTraceEnabled()) {

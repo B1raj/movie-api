@@ -36,7 +36,6 @@ public class AccessFactory {
     private String secret;
 
     public UserTokens createToken(UserInfo userInfo) {
-
         // prepare token payload
         AccessTokenPayload payload = computeAccessTokenPayload(userInfo, accessTokenIssuer);
 		return UserTokens.builder().accessToken(tokenUtil.generateAccessToken(payload, secret)).build();

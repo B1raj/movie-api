@@ -12,6 +12,7 @@ import com.biraj.backbase.movie.movieapi.repository.MovieRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +33,17 @@ public class MovieService {
     @Value("${omdb.url:https://omdbapi.com}")
     String url;
 
-    @Value("${omdb.api.timeout:10}")
-    int timeout;
-
     @Autowired
     MovieRepository movieRepository;
 
+    /**
+     * Gets movie info i.e. if it won oscar for Best picture category or not.
+     * @param name
+     * @param year
+     * @return
+     */
+
+    @Cacheable(value = "movieResponse", key = "{#name, #year}")
     public Mono<MovieResponse> getMovieInfo(String name, int year) {
         System.out.println("---------------------------------- name " + name);
         return WebClient.create(url)
@@ -69,7 +75,13 @@ public class MovieService {
                 });
     }
 
-
+    /**
+     * Get box office collection by calling OMDB API
+     * @param name
+     * @param year
+     * @return
+     */
+    @Cacheable(value="collection" ,key="{#movie, #year}")
     public Long getBoxOfficeCollection(String name, int year) {
         System.out.println("---------------------------------- name " + name);
         return WebClient.create(url)

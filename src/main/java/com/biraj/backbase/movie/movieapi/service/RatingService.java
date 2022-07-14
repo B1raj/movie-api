@@ -12,6 +12,7 @@ import com.biraj.backbase.movie.movieapi.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,9 +45,15 @@ public class RatingService {
     @Value("${api.top:10}")
     int top;
 
-    /*
-    Save Rating or update the Rating if already exists
+    /**
+     * Save Rating or update the Rating if already exists
+     *
+     * @param rating
+     * @param userId
+     * @return
      */
+
+
     public Mono<RatingResponse> saveRating(RatingRequest rating, String userId) {
         Optional<Users> user = userRepository.findByUserId(userId);
         if (user.isEmpty()) {
@@ -54,7 +61,7 @@ public class RatingService {
                     .errorMessage(MovieConstant.CANNOT_SAVE_RATING_USER_DOESNOT_EXIST)
                     .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
         }
-        Optional<Movies> movie = movieRepository.findByNameAndReleaseYear(rating.getMovie(),rating.getYear());
+        Optional<Movies> movie = movieRepository.findByNameAndReleaseYear(rating.getMovie(), rating.getYear());
         if (movie.isEmpty()) {
             return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
                     .errorMessage(MovieConstant.CANNOT_SAVE_RATING_MOVIE_NAME_INCORRECT)
@@ -62,7 +69,7 @@ public class RatingService {
         }
         Movies m = movie.get();
         Users u = user.get();
-        Optional<MovieRating> ratedMovieOptional = ratingExists(m, u);
+        Optional<MovieRating> ratedMovieOptional = ratingRepository.findByMovieAndUser(m, u);
         Mono<MovieRating> obj;
         if (ratedMovieOptional.isEmpty()) {
             obj = Mono.just(ratingRepository.save(MovieRating.builder().user(u).movie(m).rating(rating.getRating()).build()));
@@ -74,30 +81,26 @@ public class RatingService {
         return obj.map(o -> RatingResponse.builder().rating(o.getRating()).movie(rating.getMovie()).year(rating.getYear()).build());
     }
 
-    private Optional<MovieRating> ratingExists(Movies movie, Users userId) {
-        return ratingRepository.findByMovieAndUser(movie, userId);
-    }
+    /**
+     * Get top ten movies
+     * Get collection for movie by name and release year
+     *
+     * @return top ten movies list
+     */
 
     public List<TopMovies> getTop10Movies() {
         Pageable firstPageWithTenElements = PageRequest.of(0, top);
         Optional<List<TopMovies>> objectStringMap = ratingRepository.findTopNByRating(firstPageWithTenElements);
         if (objectStringMap.isPresent()) {
             List<TopMovies> movies = objectStringMap.get();
-            movies.forEach(movie->{
-                movie.setBoxOfficeCollection(getCollection(movie.getName(),movie.getReleaseYear()));
+            movies.forEach(movie -> {
+                movie.setBoxOfficeCollection(movieService.getBoxOfficeCollection(movie.getName(), movie.getReleaseYear()));
             });
-          return movies.stream().sorted((o1, o2) -> o2.getBoxOfficeCollection().compareTo(o1.getBoxOfficeCollection())).collect(Collectors.toList());
+            return movies.stream().sorted((o1, o2) -> o2.getBoxOfficeCollection().compareTo(o1.getBoxOfficeCollection())).collect(Collectors.toList());
         }
         log.error("Empty top 10 movies returned from db.");
         return List.of();
     }
 
-    private static <T> Predicate<T> distinctByName(Function<? super T, ?> keyExtractor) {
-        Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> seen.add(keyExtractor.apply(t));
-    }
 
-    private Long getCollection(String movie, int year) {
-        return movieService.getBoxOfficeCollection(movie,year);
-    }
 }

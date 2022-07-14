@@ -20,6 +20,5 @@ public class AccessTokenPayload {
 	private String issuer;
 	private Date issuedDate;
 	private String audience;
-	private String partyId;
 	private String userId;
 }

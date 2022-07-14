@@ -43,7 +43,7 @@ public class MovieApiFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        //MDC.put("requestUUID", req.getHeader(MovieConstant.UUID));
+        MDC.put("requestUUID", req.getHeader(MovieConstant.UUID));
         String accessToken = req.getHeader(MovieConstant.ACCESS_TOKEN);
         String authorization = req.getHeader(MovieConstant.AUTHORIZATION);
         Boolean isChainingDisabled = false;

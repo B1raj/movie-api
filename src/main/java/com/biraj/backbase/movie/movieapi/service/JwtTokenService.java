@@ -9,7 +9,6 @@ import com.biraj.backbase.movie.movieapi.bean.AccessTokenPayload;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
 import com.biraj.backbase.movie.movieapi.constant.MovieErrorCodeConstant;
 import com.biraj.backbase.movie.movieapi.exception.AccessTokenException;
-import com.biraj.backbase.movie.movieapi.utils.DateUtil;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +61,6 @@ public class JwtTokenService {
 		claims.setExpiration(java.util.Date.from(Instant.now().plus(exp, ChronoUnit.MINUTES)));
 		claims.setIssuer(accessTokenPayload.getIssuer());
 		claims.setIssuedAt(accessTokenPayload.getIssuedDate());
-		claims.setSubject(accessTokenPayload.getPartyId());
 		claims.setAudience(accessTokenPayload.getAudience());
 		claims.put(MovieConstant.USERID,accessTokenPayload.getUserId());
 		String accessToken = generateTokens(claims, secret);
