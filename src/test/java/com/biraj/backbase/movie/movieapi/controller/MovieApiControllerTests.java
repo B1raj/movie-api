@@ -1,29 +1,30 @@
 package com.biraj.backbase.movie.movieapi.controller;
 
 import com.biraj.backbase.movie.movieapi.bean.LoginResponse;
+import com.biraj.backbase.movie.movieapi.bean.MovieResponse;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
 import com.biraj.backbase.movie.movieapi.exception.AuthenticationException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles({ "test" })
 public class MovieApiControllerTests {
 
     @Autowired
@@ -37,29 +38,63 @@ public class MovieApiControllerTests {
 
 
     @Test
-    void givenValidUserDetails_shouldPerformSuccessfulLogin(){
+    void givenValidUserDetails_shouldPerformSuccessfulLogin() {
         String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/login"));
         HttpHeaders headers = new HttpHeaders();
         headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
-        headers.set(MovieConstant.AUTHORIZATION,"Basic am9obkBkb2UuY29tOmpvaG4=");
+        headers.set(MovieConstant.AUTHORIZATION, "Basic am9obkBkb2UuY29tOmpvaG4=");
         HttpEntity request = new HttpEntity<>(headers);
         ResponseEntity<LoginResponse> response = restTemplate.postForEntity(url, request, LoginResponse.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(Objects.requireNonNull(response.getBody().getAccessToken()));
     }
 
+
+    String performLogin() {
+        String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/login"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
+        headers.set(MovieConstant.AUTHORIZATION, "Basic am9obkBkb2UuY29tOmpvaG4=");
+        HttpEntity request = new HttpEntity<>(headers);
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(url, request, LoginResponse.class);
+        return response.getBody().getAccessToken();
+    }
+
     @Test
-    void givenValidMovieNameAndYear_ShouldRetrunIfMovieGotOscar(){
+    void givenValidMovieNameAndYear_ShouldReturnIfMovieGotOscar() {
         String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/movie"));
         HttpHeaders headers = new HttpHeaders();
         headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
-        headers.set(MovieConstant.ACCESS_TOKEN,AT);
+        headers.set(MovieConstant.ACCESS_TOKEN, performLogin());
         headers.set(MovieConstant.MOVIE, "Titanic");
         headers.set(MovieConstant.YEAR, "1997");
         HttpEntity request = new HttpEntity<>(headers);
-        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(url, request, LoginResponse.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(Objects.requireNonNull(response.getBody().getAccessToken()));
+        ResponseEntity<MovieResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, MovieResponse.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getAwards());
+        assertThat(response.getBody().getAwards().length>0);
+        Arrays.stream(response.getBody().getAwards()).forEach((e)->{
+            if(e.getCategory().equals("Best Picture")){
+                assertThat(e.getIsAwarded().equals(Boolean.TRUE));
+            }
+        });
+    }
+
+    @Test
+    void givenValidInvalidMovieNameOrYear_ShouldReturnValidationError() {
+        String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/movie"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
+        headers.set(MovieConstant.ACCESS_TOKEN, performLogin());
+        headers.set(MovieConstant.MOVIE, "Titanic");
+        headers.set(MovieConstant.YEAR, "1700");
+        HttpEntity request = new HttpEntity<>(headers);
+        ResponseEntity<MovieResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, MovieResponse.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getErrorInfo());
+        assertNotNull(response.getBody().getErrorInfo().getErrorCode());
     }
 
 }

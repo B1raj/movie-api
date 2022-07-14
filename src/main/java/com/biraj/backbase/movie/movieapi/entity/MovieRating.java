@@ -13,9 +13,10 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Entity
+@Table(indexes = {@Index(name = "rating_index", columnList = "rating DESC")})
 public class MovieRating implements Serializable {
 
     @Id

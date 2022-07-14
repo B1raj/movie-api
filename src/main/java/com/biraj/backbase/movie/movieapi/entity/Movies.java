@@ -17,6 +17,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 @Entity
+@Table(indexes = {@Index(name = "mulitSortIndex", columnList = "name, releaseYear", unique = true)
+})
 public class Movies {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

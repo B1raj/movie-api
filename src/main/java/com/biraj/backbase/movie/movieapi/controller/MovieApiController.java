@@ -72,7 +72,7 @@ public class MovieApiController {
         AccessToken accessToken = (AccessToken) request.getAttribute(MovieConstant.ACCESS_TOKEN);
         Mono<RatingResponse> ratingResponseMono = ratingService.saveRating(rating, accessToken.getPayload().getUserId());
 
-        return ratingResponseMono.map(m -> ResponseEntity.status(HttpStatus.OK).body(m))
+        return ratingResponseMono.map(m -> ResponseEntity.status(HttpStatus.CREATED).body(m))
                 .cast(ResponseEntity.class);
     }
 
