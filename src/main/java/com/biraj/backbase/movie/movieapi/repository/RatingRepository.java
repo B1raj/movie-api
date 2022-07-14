@@ -16,7 +16,6 @@ import java.util.Optional;
  * @author birajmishra
  */
 @Repository
-//public interface RatingRepository extends CrudRepository<MovieRating, Integer> {
 public interface RatingRepository extends PagingAndSortingRepository<MovieRating, Integer> {
     Optional<MovieRating> findByMovieAndUser(Movies movie, Users user);
    @Query("SELECT new com.biraj.backbase.movie.movieapi.bean.TopMovies(m.name,AVG(mr.rating),m.releaseYear) FROM MovieRating AS mr INNER JOIN Movies AS m on m.id=mr.movie GROUP BY m.name ORDER BY AVG(mr.rating) DESC")

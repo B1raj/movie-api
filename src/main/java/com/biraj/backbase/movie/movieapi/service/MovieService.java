@@ -38,6 +38,7 @@ public class MovieService {
 
     /**
      * Gets movie info i.e. if it won oscar for Best picture category or not.
+     *
      * @param name
      * @param year
      * @return
@@ -45,7 +46,7 @@ public class MovieService {
 
     @Cacheable(value = "movieResponse", key = "{#name, #year}")
     public Mono<MovieResponse> getMovieInfo(String name, int year) {
-        System.out.println("---------------------------------- name " + name);
+        log.info("getting movie details from omdb for " + name);
         return WebClient.create(url)
                 .method(HttpMethod.GET)
                 .uri(builder -> builder
@@ -77,13 +78,14 @@ public class MovieService {
 
     /**
      * Get box office collection by calling OMDB API
+     *
      * @param name
      * @param year
      * @return
      */
-    @Cacheable(value="collection" ,key="{#movie, #year}")
+    @Cacheable(value = "collection", key = "{#movie, #year}")
     public Long getBoxOfficeCollection(String name, int year) {
-        System.out.println("---------------------------------- name " + name);
+     log.info("Getting box office collection for name " + name);
         return WebClient.create(url)
                 .method(HttpMethod.GET)
                 .uri(builder -> builder
@@ -112,7 +114,7 @@ public class MovieService {
 
 
     private boolean isAValidMovie(String name, int year, ResponseEntity<OmdbResponse> OmdbResponse) {
-        return Objects.requireNonNull(OmdbResponse.getBody())
+        return null != OmdbResponse && null != OmdbResponse.getBody() && OmdbResponse.getBody()
                 .getResponse()
                 .equalsIgnoreCase("True")
                 && OmdbResponse.getBody().getTitle().equals(name)

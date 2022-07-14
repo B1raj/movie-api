@@ -55,7 +55,6 @@ public class MovieApiController {
 
 
     @GetMapping(value = "/movie")
-
     private Mono<ResponseEntity> movie(HttpServletRequest request,
                                        @RequestHeader(value = MovieConstant.UUID) String uuid,
                                        @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString,

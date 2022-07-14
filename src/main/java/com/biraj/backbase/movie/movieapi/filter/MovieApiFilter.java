@@ -42,7 +42,6 @@ public class MovieApiFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-
         MDC.put("requestUUID", req.getHeader(MovieConstant.UUID));
         String accessToken = req.getHeader(MovieConstant.ACCESS_TOKEN);
         String authorization = req.getHeader(MovieConstant.AUTHORIZATION);

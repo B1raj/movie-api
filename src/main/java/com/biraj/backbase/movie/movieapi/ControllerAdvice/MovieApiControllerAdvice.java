@@ -62,20 +62,7 @@ public class MovieApiControllerAdvice {
         return createErrorResponse(req, exception.getMessage(), exception.getErrorCode());
     }
 
-    /**
-     * Handler for InvalidDataException.
-     *
-     * @param req
-     * @param exception
-     * @return
-     */
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(InvalidDataException.class)
-    @ResponseBody
-    ErrorInfo handleInvalidDataException(HttpServletRequest req, InvalidDataException exception) {
-        log.error("FORBIDDEN", exception);
-        return createErrorResponse(req, exception.getMessage(), exception.getErrorCode());
-    }
+
 
     /**
      * Handler for MethodArgumentTypeMismatchException.
