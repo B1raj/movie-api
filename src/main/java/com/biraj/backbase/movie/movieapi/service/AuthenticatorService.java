@@ -1,12 +1,11 @@
 package com.biraj.backbase.movie.movieapi.service;
 
 import com.biraj.backbase.movie.movieapi.bean.AuthenticatorResponse;
+import com.biraj.backbase.movie.movieapi.bean.ErrorInfo;
 import com.biraj.backbase.movie.movieapi.bean.UserInfo;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
 import com.biraj.backbase.movie.movieapi.constant.MovieErrorCodeConstant;
 import com.biraj.backbase.movie.movieapi.entity.Users;
-import com.biraj.backbase.movie.movieapi.exception.AuthenticationException;
-import com.biraj.backbase.movie.movieapi.exception.BadRequestException;
 import com.biraj.backbase.movie.movieapi.repository.UserRepository;
 import com.biraj.backbase.movie.movieapi.utils.CrypticUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -29,20 +28,19 @@ public class AuthenticatorService {
 
 	/**
 	 * validate user from db
-	 * @param authorization
-	 * @return
-	 * @throws AuthenticationException
-	 * @throws BadRequestException
+	 * @param authorization : Base64 Encoded Username and password
+	 * @return AuthenticatorResponse : AuthenticatorResponse
 	 */
 
-	public AuthenticatorResponse authenticate(String authorization)
-			throws AuthenticationException, BadRequestException {
+	public AuthenticatorResponse authenticate(String authorization) {
 		if (log.isTraceEnabled()) {
 			log.trace("AuthenticatorServiceImpl : authenticate : Start");
 		}
 		String[] authParts = authorization.split("\\s+");
 		if (authParts.length != 2) {
-			throw new BadRequestException(MovieErrorCodeConstant.BAD_REQUEST, MovieConstant.BAD_REQUEST);
+			//throw new BadRequestException(MovieErrorCodeConstant.BAD_REQUEST, MovieConstant.BAD_REQUEST);
+			return AuthenticatorResponse.builder().authenticated(false).errorInfo(ErrorInfo.builder().errorCode(MovieErrorCodeConstant.BAD_REQUEST).errorMessage(MovieConstant.BAD_REQUEST).build()).build();
+
 		}
 		String decodedAuth = CrypticUtil.decrypt(authParts[1]);
 		AuthenticatorResponse response;
@@ -54,8 +52,11 @@ public class AuthenticatorService {
 
 		if(userObject.isEmpty()){
 			log.error("Authentication failed for provided {}", userid);
-			throw new AuthenticationException(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE,
-					MovieConstant.UNABLE_TO_AUTHENTICATE);
+			//throw new AuthenticationException(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE,
+			//		MovieConstant.UNABLE_TO_AUTHENTICATE);
+			return AuthenticatorResponse.builder().authenticated(false).errorInfo(ErrorInfo.builder().errorCode(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE).errorMessage(MovieConstant.UNABLE_TO_AUTHENTICATE).build()).build();
+
+
 		}
 		Users user = userObject.get();
 		if (userid.equals(user.getUserId()) && password.equals(user.getPassword())) {
@@ -66,8 +67,10 @@ public class AuthenticatorService {
 		} else {
 			// invalid user
 			log.error("Authentication failed for provided {}", userid);
-			throw new AuthenticationException(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE,
-					MovieConstant.UNABLE_TO_AUTHENTICATE);
+			//throw new AuthenticationException(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE,
+			//		MovieConstant.UNABLE_TO_AUTHENTICATE);
+			return AuthenticatorResponse.builder().authenticated(false).errorInfo(ErrorInfo.builder().errorCode(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE).errorMessage(MovieConstant.UNABLE_TO_AUTHENTICATE).build()).build();
+
 		}
 
 	}

@@ -12,8 +12,4 @@ public class DateUtil {
 		return new Date();
 	}
 
-	public static Timestamp getTimestamp() {
-		return Timestamp.from(Instant.now());
-	}
-
 }

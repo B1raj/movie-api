@@ -12,7 +12,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,8 +36,34 @@ public class MovieApiControllerTests {
     void login_givenValidUserDetails_shouldPerformSuccessfulLogin() {
         ResponseEntity<LoginResponse> response = performLogin();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertNotNull(Objects.requireNonNull(response.getBody()));
-        assertNotNull(Objects.requireNonNull(response.getBody().getAccessToken()));
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getAccessToken());
+    }
+
+    @Test
+    void login_givenInvalidUserPassword_shouldThrowValidationError() {
+        String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/login"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
+        headers.set(MovieConstant.AUTHORIZATION, "Basic bWlrZUBkb2UuY29tOm1pa2UyMTIxMg==");
+        HttpEntity<Object> request = new HttpEntity<>(headers);
+         restTemplate.postForEntity(url, request, LoginResponse.class);
+        ResponseEntity<LoginResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, LoginResponse.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void login_givenInvalidUsername_shouldThrowValidationError() {
+        String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/login"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
+        headers.set(MovieConstant.AUTHORIZATION, "Basic bWlrZTFAZG9lLmNvbTptaWtl");
+        HttpEntity<Object> request = new HttpEntity<>(headers);
+        restTemplate.postForEntity(url, request, LoginResponse.class);
+        ResponseEntity<LoginResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, LoginResponse.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertNotNull(response.getBody());
     }
 
 
@@ -47,7 +72,7 @@ public class MovieApiControllerTests {
         HttpHeaders headers = new HttpHeaders();
         headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
         headers.set(MovieConstant.AUTHORIZATION, "Basic am9obkBkb2UuY29tOmpvaG4=");
-        HttpEntity request = new HttpEntity<>(headers);
+        HttpEntity<Object> request = new HttpEntity<>(headers);
         return restTemplate.postForEntity(url, request, LoginResponse.class);
     }
 
@@ -61,7 +86,7 @@ public class MovieApiControllerTests {
         headers.set(MovieConstant.ACCESS_TOKEN, response1.getBody().getAccessToken());
         headers.set(MovieConstant.MOVIE, "Titanic");
         headers.set(MovieConstant.YEAR, "1997");
-        HttpEntity request = new HttpEntity<>(headers);
+        HttpEntity<Object> request = new HttpEntity<>(headers);
         ResponseEntity<MovieResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, MovieResponse.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(response.getBody());
@@ -84,9 +109,9 @@ public class MovieApiControllerTests {
         headers.set(MovieConstant.ACCESS_TOKEN, response1.getBody().getAccessToken());
         headers.set(MovieConstant.MOVIE, "Titanic");
         headers.set(MovieConstant.YEAR, "1700");
-        HttpEntity request = new HttpEntity<>(headers);
+        HttpEntity<Object> request = new HttpEntity<>(headers);
         ResponseEntity<MovieResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, MovieResponse.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getErrorInfo());
         assertNotNull(response.getBody().getErrorInfo().getErrorCode());
@@ -101,7 +126,7 @@ public class MovieApiControllerTests {
         headers.set(MovieConstant.ACCESS_TOKEN, "Invalid AT");
         headers.set(MovieConstant.MOVIE, "Titanic");
         headers.set(MovieConstant.YEAR, "1997");
-        HttpEntity request = new HttpEntity<>(headers);
+        HttpEntity<Object> request = new HttpEntity<>(headers);
         ResponseEntity<MovieResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, MovieResponse.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -114,7 +139,7 @@ public class MovieApiControllerTests {
         assertNotNull(response.getBody());
         headers.set(MovieConstant.ACCESS_TOKEN, response.getBody().getAccessToken());
         headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
-        HttpEntity request = new HttpEntity<>(RatingRequest.builder().rating(100.2).movie("Milk").year(2008).build(), headers);
+        HttpEntity<Object> request = new HttpEntity<>(RatingRequest.builder().rating(100.2).movie("Milk").year(2008).build(), headers);
         ResponseEntity<RatingResponse> ratingResponse = restTemplate.exchange(url, HttpMethod.POST, request, RatingResponse.class);
         assertThat(ratingResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertNotNull(ratingResponse.getBody());
@@ -131,9 +156,9 @@ public class MovieApiControllerTests {
         headers.set(MovieConstant.ACCESS_TOKEN, response1.getBody().getAccessToken());
         headers.set(MovieConstant.MOVIE, "Titanic");
         headers.set(MovieConstant.YEAR, "1700");
-        HttpEntity request = new HttpEntity<>(RatingRequest.builder().rating(100.2).movie("Milk").year(2000).build(), headers);
+        HttpEntity<Object> request = new HttpEntity<>(RatingRequest.builder().rating(100.2).movie("Milk").year(2000).build(), headers);
         ResponseEntity<MovieResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, MovieResponse.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getErrorInfo());
         assertNotNull(response.getBody().getErrorInfo().getErrorCode());
@@ -148,7 +173,7 @@ public class MovieApiControllerTests {
         ResponseEntity<LoginResponse> tokenResponse = performLogin();
         assertNotNull(tokenResponse.getBody());
         headers.set(MovieConstant.ACCESS_TOKEN, tokenResponse.getBody().getAccessToken());
-        HttpEntity request = new HttpEntity<>(headers);
+        HttpEntity<Object> request = new HttpEntity<>(headers);
         ResponseEntity<List> responseEntityResponseEntity = restTemplate.exchange(url, HttpMethod.GET, request, List.class);
         assertEquals(responseEntityResponseEntity.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseEntityResponseEntity.getBody());

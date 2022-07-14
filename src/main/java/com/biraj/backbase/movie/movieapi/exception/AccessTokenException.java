@@ -14,7 +14,7 @@ public class AccessTokenException extends MovieApiException {
 	private static final long serialVersionUID = -5103834241136923369L;
 	
 	public AccessTokenException() {
-		super("40001" , "Access token exception occured.");
+		super("40001" , "Access token exception occurred.");
 	}
 	
 	public AccessTokenException(String errorCode,String errorDescription) {

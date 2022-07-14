@@ -21,4 +21,5 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticatorResponse  {
 	private boolean authenticated;
 	private UserInfo userInfo;
+	private ErrorInfo errorInfo;
 }

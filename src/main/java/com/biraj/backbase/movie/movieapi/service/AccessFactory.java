@@ -6,7 +6,6 @@ import com.biraj.backbase.movie.movieapi.bean.AccessToken;
 import com.biraj.backbase.movie.movieapi.bean.AccessTokenPayload;
 import com.biraj.backbase.movie.movieapi.bean.UserInfo;
 import com.biraj.backbase.movie.movieapi.bean.UserTokens;
-import com.biraj.backbase.movie.movieapi.exception.AccessTokenException;
 import com.biraj.backbase.movie.movieapi.utils.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ public class AccessFactory {
 		return UserTokens.builder().accessToken(tokenUtil.generateAccessToken(payload, secret)).build();
     }
 
-    public AccessToken verifyAccessToken(String accessToken) throws AccessTokenException {
+    public AccessToken verifyAccessToken(String accessToken) {
         log.info("AccessTokenFactory : verifyAccessToken : verifying access token {}", accessToken);
         return tokenUtil.verifyAccessToken(accessToken, secret);
     }

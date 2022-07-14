@@ -61,7 +61,7 @@ public class MovieService {
                 }).toEntity(OmdbResponse.class)
                 .map(OmdbResponse -> {
                     if (!isAValidMovie(name, year, OmdbResponse)) {
-                        return getInvalidMovieResponse(name);
+                        return getInvalidMovieResponse(name, year);
                     }
                     //valid movie since it is present in omdb,check in DB now
                     Optional<Movies> movie = movieRepository.findByNameIgnoreCaseAndReleaseYear(name, year);
@@ -72,20 +72,20 @@ public class MovieService {
                                 .year(year)
                                 .build();
                     }
-                    return getInvalidMovieResponse(name);
+                    return getInvalidMovieResponse(name, year);
                 });
     }
 
     /**
      * Get box office collection by calling OMDB API
      *
-     * @param name
-     * @param year
-     * @return
+     * @param name : mavie name
+     * @param year : release year
+     * @return collection : collection amount
      */
     @Cacheable(value = "collection", key = "{#movie, #year}")
     public Long getBoxOfficeCollection(String name, int year) {
-     log.info("Getting box office collection for name " + name);
+        log.info("Getting box office collection for name " + name);
         return WebClient.create(url)
                 .method(HttpMethod.GET)
                 .uri(builder -> builder
@@ -98,16 +98,13 @@ public class MovieService {
                     log.error("OMDB api call resulted in error");
                     return Mono.error(new BadRequestException(MovieErrorCodeConstant.BAD_REQUEST, MovieConstant.BAD_REQUEST));
                 }).toEntity(OmdbResponse.class)
-                .map(OmdbResponse -> {
-                    return toNumber(OmdbResponse.getBody().getBoxOffice());
-                }).block();
+                .map(OmdbResponse -> toNumber(OmdbResponse.getBody().getBoxOffice())).block();
     }
 
     public Long toNumber(String boxOffice) {
         if ((null != boxOffice && boxOffice.trim().length() > 0)) {
             if (boxOffice.trim().equals("N/A")) return 0L;
-            long value = Long.parseLong(boxOffice.replaceAll(",", "").replaceFirst("\\$", ""));
-            return value;
+            return Long.parseLong(boxOffice.replaceAll(",", "").replaceFirst("\\$", ""));
         }
         return 0L;
     }
@@ -122,8 +119,8 @@ public class MovieService {
                 && (String.valueOf(year).equals(OmdbResponse.getBody().getYear()));
     }
 
-    private MovieResponse getInvalidMovieResponse(String name) {
-        return MovieResponse.builder().name(name).errorInfo(ErrorInfo.builder()
+    private MovieResponse getInvalidMovieResponse(String name, int year) {
+        return MovieResponse.builder().name(name).year(year).errorInfo(ErrorInfo.builder()
                         .errorMessage(MovieConstant.INVALID_MOVIE_REQUEST)
                         .errorCode(MovieErrorCodeConstant.BAD_REQUEST_EXCEPTION)
                         .build())

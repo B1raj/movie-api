@@ -4,13 +4,9 @@
 package com.biraj.backbase.movie.movieapi.ControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
-
 import com.biraj.backbase.movie.movieapi.bean.ErrorInfo;
 import com.biraj.backbase.movie.movieapi.constant.MovieErrorCodeConstant;
 import com.biraj.backbase.movie.movieapi.exception.AccessTokenException;
-import com.biraj.backbase.movie.movieapi.exception.AuthenticationException;
-import com.biraj.backbase.movie.movieapi.exception.BadRequestException;
-import com.biraj.backbase.movie.movieapi.exception.InvalidDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
@@ -18,7 +14,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 
 /**
@@ -47,54 +42,6 @@ public class MovieApiControllerAdvice {
         return createErrorResponse(req, exception.getMessage(), exception.getErrorCode());
     }
 
-    /**
-     * Handler for AuthenticationException.
-     *
-     * @param req
-     * @param exception
-     * @return
-     */
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(AuthenticationException.class)
-    @ResponseBody
-    ErrorInfo handleAuthenticationException(HttpServletRequest req, AuthenticationException exception) {
-        log.error("UNAUTHORIZED_ACCESS_ERROR exception ", exception);
-        return createErrorResponse(req, exception.getMessage(), exception.getErrorCode());
-    }
-
-
-
-    /**
-     * Handler for MethodArgumentTypeMismatchException.
-     *
-     * @param req
-     * @param exception
-     * @return
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseBody
-    ErrorInfo handleInvalidDataException(HttpServletRequest req, MethodArgumentTypeMismatchException exception) {
-        log.error("BAD_REQUEST", exception);
-        return createErrorResponse(req, "BAD_REQUEST", MovieErrorCodeConstant.BAD_REQUEST);
-    }
-
-
-    /**
-     *
-     * Handler for BadRequestException.
-     *
-     * @param req
-     * @param exception
-     * @return
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BadRequestException.class)
-    @ResponseBody
-    ErrorInfo handleBadRequestException(HttpServletRequest req, BadRequestException exception) {
-        log.error("UNAUTHORIZED_ACCESS_ERROR exception ", exception);
-        return createErrorResponse(req, exception.getMessage(), exception.getErrorCode());
-    }
 
 
     /**
