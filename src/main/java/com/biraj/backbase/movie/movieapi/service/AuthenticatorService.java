@@ -38,12 +38,9 @@ public class AuthenticatorService {
 		}
 		String[] authParts = authorization.split("\\s+");
 		if (authParts.length != 2) {
-			//throw new BadRequestException(MovieErrorCodeConstant.BAD_REQUEST, MovieConstant.BAD_REQUEST);
 			return AuthenticatorResponse.builder().authenticated(false).errorInfo(ErrorInfo.builder().errorCode(MovieErrorCodeConstant.BAD_REQUEST).errorMessage(MovieConstant.BAD_REQUEST).build()).build();
-
 		}
 		String decodedAuth = CrypticUtil.decrypt(authParts[1]);
-		AuthenticatorResponse response;
 
 		String userid = decodedAuth.split(":")[0];
 		String password = decodedAuth.split(":")[1];
@@ -52,8 +49,6 @@ public class AuthenticatorService {
 
 		if(userObject.isEmpty()){
 			log.error("Authentication failed for provided {}", userid);
-			//throw new AuthenticationException(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE,
-			//		MovieConstant.UNABLE_TO_AUTHENTICATE);
 			return AuthenticatorResponse.builder().authenticated(false).errorInfo(ErrorInfo.builder().errorCode(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE).errorMessage(MovieConstant.UNABLE_TO_AUTHENTICATE).build()).build();
 
 
@@ -67,8 +62,6 @@ public class AuthenticatorService {
 		} else {
 			// invalid user
 			log.error("Authentication failed for provided {}", userid);
-			//throw new AuthenticationException(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE,
-			//		MovieConstant.UNABLE_TO_AUTHENTICATE);
 			return AuthenticatorResponse.builder().authenticated(false).errorInfo(ErrorInfo.builder().errorCode(MovieErrorCodeConstant.UNABLE_TO_AUTHENTICATE).errorMessage(MovieConstant.UNABLE_TO_AUTHENTICATE).build()).build();
 
 		}
