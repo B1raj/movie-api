@@ -3,8 +3,6 @@ package com.biraj.backbase.movie.movieapi.controller;
 import com.biraj.backbase.movie.movieapi.bean.LoginResponse;
 import com.biraj.backbase.movie.movieapi.bean.MovieResponse;
 import com.biraj.backbase.movie.movieapi.constant.MovieConstant;
-import com.biraj.backbase.movie.movieapi.exception.AuthenticationException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,10 +10,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -82,7 +79,7 @@ public class MovieApiControllerTests {
     }
 
     @Test
-    void givenValidInvalidMovieNameOrYear_ShouldReturnValidationError() {
+    void givenValidAccessTokenAndInvalidMovieNameOrYear_ShouldReturnValidationError() {
         String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/movie"));
         HttpHeaders headers = new HttpHeaders();
         headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
@@ -95,6 +92,19 @@ public class MovieApiControllerTests {
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getErrorInfo());
         assertNotNull(response.getBody().getErrorInfo().getErrorCode());
+    }
+
+    @Test
+    void givenInValidAccessToken_ShouldReturnError() {
+        String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/movie"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
+        headers.set(MovieConstant.ACCESS_TOKEN, "Invalid AT");
+        headers.set(MovieConstant.MOVIE, "Titanic");
+        headers.set(MovieConstant.YEAR, "1997");
+        HttpEntity request = new HttpEntity<>(headers);
+        ResponseEntity<MovieResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, MovieResponse.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
 }
