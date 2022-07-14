@@ -61,7 +61,7 @@ public class RatingService {
                     .errorMessage(MovieConstant.CANNOT_SAVE_RATING_USER_DOESNOT_EXIST)
                     .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
         }
-        Optional<Movies> movie = movieRepository.findByNameAndReleaseYear(rating.getMovie(), rating.getYear());
+        Optional<Movies> movie = movieRepository.findByNameIgnoreCaseAndReleaseYear(rating.getMovie(), rating.getYear());
         if (movie.isEmpty()) {
             return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
                     .errorMessage(MovieConstant.CANNOT_SAVE_RATING_MOVIE_NAME_INCORRECT)

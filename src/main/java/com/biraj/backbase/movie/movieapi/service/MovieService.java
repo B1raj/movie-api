@@ -64,7 +64,7 @@ public class MovieService {
                         return getInvalidMovieResponse(name);
                     }
                     //valid movie since it is present in omdb,check in DB now
-                    Optional<Movies> movie = movieRepository.findByNameAndReleaseYear(name, year);
+                    Optional<Movies> movie = movieRepository.findByNameIgnoreCaseAndReleaseYear(name, year);
                     if (movie.isPresent()) {
                         return MovieResponse.builder()
                                 .name(name).awards(new Award[]{Award.builder().isAwarded(movie.get().isAwarded()).category(movie.get().getCategory()).build()})
@@ -117,7 +117,7 @@ public class MovieService {
         return null != OmdbResponse && null != OmdbResponse.getBody() && OmdbResponse.getBody()
                 .getResponse()
                 .equalsIgnoreCase("True")
-                && OmdbResponse.getBody().getTitle().equals(name)
+                && OmdbResponse.getBody().getTitle().equalsIgnoreCase(name)
                 && OmdbResponse.getBody().getType().equals("movie")
                 && (String.valueOf(year).equals(OmdbResponse.getBody().getYear()));
     }
