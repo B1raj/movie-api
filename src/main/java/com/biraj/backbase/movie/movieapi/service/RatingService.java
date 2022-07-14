@@ -72,13 +72,14 @@ public class RatingService {
         Optional<MovieRating> ratedMovieOptional = ratingRepository.findByMovieAndUser(m, u);
         Mono<MovieRating> obj;
         if (ratedMovieOptional.isEmpty()) {
-            obj = Mono.just(ratingRepository.save(MovieRating.builder().user(u).movie(m).rating(rating.getRating()).build()));
+            MovieRating save = ratingRepository.save(MovieRating.builder().user(u).movie(m).rating(rating.getRating()).build());
+            obj = Mono.just(save);
         } else {
             MovieRating ratedMovie = ratedMovieOptional.get();
             ratedMovie.setRating(rating.getRating());
             obj = Mono.just(ratingRepository.save(ratedMovie));
         }
-        return obj.map(o -> RatingResponse.builder().rating(o.getRating()).movie(rating.getMovie()).year(rating.getYear()).build());
+        return obj.map(o -> RatingResponse.builder().id(o.getId()).rating(o.getRating()).movie(rating.getMovie()).year(rating.getYear()).build());
     }
 
     /**

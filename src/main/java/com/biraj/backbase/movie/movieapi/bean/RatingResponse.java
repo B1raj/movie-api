@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public class RatingResponse {
+    private Long id;
     private String movie;
     private int year;
     private double rating;

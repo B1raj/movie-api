@@ -77,7 +77,7 @@ public class MovieApiController {
     }
 
     @GetMapping(value = "/top10")
-    private Mono<ResponseEntity> top10(HttpServletRequest request,
+    private Mono<ResponseEntity> top10Movies(HttpServletRequest request,
                                        @RequestHeader(value = MovieConstant.UUID) String uuid,
                                        @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString) {
         Mono<List<TopMovies>> movieInfo = Mono.just(ratingService.getTop10Movies());
