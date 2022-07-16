@@ -1,15 +1,16 @@
 # movie-api
+## Testing the app
 
+The below sequence of api calls can be made to test the application.
 
-
+0. To perform login use below username and password pair to create the Authorization token:
 ```
-To perform login use below username and password pair to create the Authorization token:
 john@doe.com/john
 mike@doe.com/mike
 will@doe.com/will
 ```
 
-Login API:
+1. Login API:
 ```
 POST /v1/api/login HTTP/1.1
 Host: localhost:8080
@@ -36,7 +37,7 @@ AccessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjE5MjcsImlzcy
 Content-Type: application/json
 {
 	"movie":"skippy",
-	"rating": 9.90,
+	"rating": 1.90,
 	"year":1931
 }
 ```
@@ -50,7 +51,7 @@ AccessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjE5MjcsImlzcy
 Content-Type: application/json
 {
 	"movie":"skippy",
-	"rating": 9.90,
+	"rating": 9.5,
 	"year":1931
 }
 ```
@@ -64,3 +65,11 @@ AccessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjE5MjcsImlzcy
 Content-Type: application/json
 
 ```
+
+
+[solution.md](./solution.md) <br>
+[how_to_run.md](./how_to_run.md ) <br>
+[how_to_test.md](./how_to_test.md ) <br>
+[to_do.md](./to_do.md )<br>
+[assumptions.md](./assumptions.md)<br>
+[scale.md](./scale.md)<br>

@@ -13,3 +13,11 @@ Below are the assumptions.
 9. Since we want to implement the rating functionality, hence we will use database for storing user rating against the username.
 10. OMDB API data don't change in real time, hence it's totally fair to use client side caching to boost performance and avoid additional network call, improving response time and not overshooting the OMDB per day api hit limitation
 11. If box office collection doesn't exist in OMBD api or has a value of N/A. Then we will default it to 0.
+
+
+[solution.md](./solution.md) <br>
+[how_to_run.md](./how_to_run.md ) <br>
+[how_to_test.md](./how_to_test.md ) <br>
+[to_do.md](./to_do.md )<br>
+[assumptions.md](./assumptions.md)<br>
+[scale.md](./scale.md)<br>

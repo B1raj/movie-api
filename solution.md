@@ -17,3 +17,12 @@ For this solution we have used H2 databases(in-memory). The database schema and 
 Spring caching feature is also used here to avoid additional omdb api call, considering the omdb responses are not changing in real time. Hence, it is considered safe to be cached at application level.
 
 ![Screenshot](./solution.png)
+
+
+
+[solution.md](./solution.md) <br>
+[how_to_run.md](./how_to_run.md ) <br>
+[how_to_test.md](./how_to_test.md ) <br>
+[to_do.md](./to_do.md )<br>
+[assumptions.md](./assumptions.md)<br>
+[scale.md](./scale.md)<br>
