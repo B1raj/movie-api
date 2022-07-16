@@ -62,8 +62,6 @@ GET /v1/api/top10 HTTP/1.1
 Host: localhost:8080
 uuid: <Some random value>
 AccessToken: <a valid token>
-Content-Type: application/json
-
 ```
 
 
