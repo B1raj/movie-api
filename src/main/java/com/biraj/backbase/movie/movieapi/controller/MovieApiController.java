@@ -16,12 +16,16 @@ import reactor.core.publisher.Mono;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+
+import static com.biraj.backbase.movie.movieapi.constant.MovieConstant.RATING_VALIDATION;
+import static com.biraj.backbase.movie.movieapi.constant.MovieErrorCodeConstant.BAD_REQUEST;
+
 /**
  * @author birajmishra
  * Controller, this is where request lands.
  */
 
-
+@SuppressWarnings("rawtypes")
 @RestController
 @Slf4j
 @RequestMapping(value = "/v1/api")
@@ -75,6 +79,9 @@ public class MovieApiController {
                                             @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString,
                                             @RequestBody RatingRequest rating) {
         AccessToken accessToken = (AccessToken) request.getAttribute(MovieConstant.ACCESS_TOKEN);
+
+        Mono<ResponseEntity> validated = validate(rating);
+        if (validated != null) return validated;
         Mono<RatingResponse> ratingResponseMono = ratingService.saveRating(rating, accessToken.getPayload().getUserId());
 
         return ratingResponseMono.map(m -> {
@@ -85,10 +92,39 @@ public class MovieApiController {
         }).cast(ResponseEntity.class);
     }
 
+    @PutMapping(value = "/rating")
+    private Mono<ResponseEntity> updateRating(HttpServletRequest request,
+                                            @RequestHeader(value = MovieConstant.UUID) String uuid,
+                                            @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString,
+                                            @RequestBody RatingRequest rating) {
+        AccessToken accessToken = (AccessToken) request.getAttribute(MovieConstant.ACCESS_TOKEN);
+
+        Mono<ResponseEntity> validated = validate(rating);
+        if (validated != null) return validated;
+        Mono<RatingResponse> ratingResponseMono = ratingService.updateRating(rating, accessToken.getPayload().getUserId());
+
+        return ratingResponseMono.map(m -> {
+            if (null != m.getErrorInfo()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(m);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(m);
+        }).cast(ResponseEntity.class);
+    }
+
+    private Mono<ResponseEntity> validate(RatingRequest rating) {
+        if(rating.getRating()>10){
+            ErrorInfo e =  ErrorInfo.builder().errorMessage(RATING_VALIDATION).errorCode(BAD_REQUEST).build();
+            return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e));
+        }
+        return null;
+    }
+
     @GetMapping(value = "/top10")
     private Mono<ResponseEntity> top10Movies(HttpServletRequest request,
                                        @RequestHeader(value = MovieConstant.UUID) String uuid,
                                        @RequestHeader(value = MovieConstant.ACCESS_TOKEN) String accessTokenString) {
+
+
         Mono<List<TopMovies>> movieInfo = Mono.just(ratingService.getTop10Movies());
 
         return movieInfo.map(m -> ResponseEntity.status(HttpStatus.OK).body(m))

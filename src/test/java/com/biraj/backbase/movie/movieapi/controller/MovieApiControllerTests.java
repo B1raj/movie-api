@@ -132,18 +132,66 @@ public class MovieApiControllerTests {
     }
 
     @Test
-    void saveRating_givenValidAccessTokenAndValidMovieNameAndYearAndRating_ShouldDaveRatingSuccessfully() {
+    void saveRating_givenValidAccessTokenAndValidMovieNameAndYearAndRating_ShouldSaveRatingSuccessfully() {
+        ResponseEntity<RatingResponse> ratingResponse = createMovieRating("Little Women",1933,8.2);
+        assertThat(ratingResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertNotNull(ratingResponse.getBody());
+        assertNotNull(ratingResponse.getBody().getId());
+    }
+
+    @Test
+    void saveRating_givenValidAccessTokenAndAlreadySavedMoveRating_ShouldThrowValidationError() {
+        createMovieRating("Bad Girl",1932,8.2);
+        ResponseEntity<RatingResponse> ratingResponse = createMovieRating("Bad Girl",1932,8.2);
+        assertThat(ratingResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertNotNull(ratingResponse.getBody());
+        assertNotNull(ratingResponse.getBody().getErrorInfo());
+        assertEquals(ratingResponse.getBody().getErrorInfo().getErrorCode(),"40003");
+    }
+
+    @Test
+    void updateRating_givenValidAccessTokenAndValidMovieNameAndYearAndRating_ShouldUpdateRatingSuccessfully() {
+        createMovieRating("Milk",2008,1.2);
         String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/rating"));
         HttpHeaders headers = new HttpHeaders();
         ResponseEntity<LoginResponse> response = performLogin();
         assertNotNull(response.getBody());
         headers.set(MovieConstant.ACCESS_TOKEN, response.getBody().getAccessToken());
         headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
-        HttpEntity<Object> request = new HttpEntity<>(RatingRequest.builder().rating(100.2).movie("Milk").year(2008).build(), headers);
-        ResponseEntity<RatingResponse> ratingResponse = restTemplate.exchange(url, HttpMethod.POST, request, RatingResponse.class);
-        assertThat(ratingResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        HttpEntity<Object> request = new HttpEntity<>(RatingRequest.builder().rating(1.2).movie("Milk").year(2008).build(), headers);
+        ResponseEntity<RatingResponse> ratingResponse = restTemplate.exchange(url, HttpMethod.PUT, request, RatingResponse.class);
+        assertThat(ratingResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(ratingResponse.getBody());
         assertNotNull(ratingResponse.getBody().getId());
+    }
+
+    @Test
+    void updateRating_givenValidAccessTokenAndNotSavedRating_ShouldReturnValidationError() {
+        String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/rating"));
+        HttpHeaders headers = new HttpHeaders();
+        ResponseEntity<LoginResponse> response = performLogin();
+        assertNotNull(response.getBody());
+        headers.set(MovieConstant.ACCESS_TOKEN, response.getBody().getAccessToken());
+        headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
+        HttpEntity<Object> request = new HttpEntity<>(RatingRequest.builder().rating(1.2).movie("Grand Hotel").year(1932).build(), headers);
+        ResponseEntity<RatingResponse> ratingResponse = restTemplate.exchange(url, HttpMethod.PUT, request, RatingResponse.class);
+        assertThat(ratingResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertNotNull(ratingResponse.getBody());
+        assertNotNull(ratingResponse.getBody().getErrorInfo());
+        assertEquals(ratingResponse.getBody().getErrorInfo().getErrorCode(),"40003");
+    }
+
+
+    private ResponseEntity<RatingResponse> createMovieRating(String name, int year, double rating) {
+        String url = BASE_URL.concat((String.valueOf(port)).concat("/v1/api/rating"));
+        HttpHeaders headers = new HttpHeaders();
+        ResponseEntity<LoginResponse> response = performLogin();
+        assertNotNull(response.getBody());
+        headers.set(MovieConstant.ACCESS_TOKEN, response.getBody().getAccessToken());
+        headers.set(MovieConstant.UUID, UUID.randomUUID().toString());
+        HttpEntity<Object> request = new HttpEntity<>(RatingRequest.builder().rating(rating).movie(name).year(year).build(), headers);
+        return  restTemplate.exchange(url, HttpMethod.POST, request, RatingResponse.class);
+
     }
 
     @Test
@@ -156,7 +204,7 @@ public class MovieApiControllerTests {
         headers.set(MovieConstant.ACCESS_TOKEN, response1.getBody().getAccessToken());
         headers.set(MovieConstant.MOVIE, "Titanic");
         headers.set(MovieConstant.YEAR, "1700");
-        HttpEntity<Object> request = new HttpEntity<>(RatingRequest.builder().rating(100.2).movie("Milk").year(2000).build(), headers);
+        HttpEntity<Object> request = new HttpEntity<>(RatingRequest.builder().rating(8.2).movie("Milk").year(2000).build(), headers);
         ResponseEntity<MovieResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, MovieResponse.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertNotNull(response.getBody());

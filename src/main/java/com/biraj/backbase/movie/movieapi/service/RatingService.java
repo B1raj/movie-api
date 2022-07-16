@@ -12,7 +12,6 @@ import com.biraj.backbase.movie.movieapi.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,9 +19,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -46,7 +42,7 @@ public class RatingService {
     int top;
 
     /**
-     * Save Rating or update the Rating if already exists
+     * Save Rating
      *
      * @param rating
      * @param userId
@@ -58,7 +54,7 @@ public class RatingService {
         Optional<Users> user = userRepository.findByUserId(userId);
         if (user.isEmpty()) {
             return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
-                    .errorMessage(MovieConstant.CANNOT_SAVE_RATING_USER_DOESNOT_EXIST)
+                    .errorMessage(MovieConstant.CANNOT_SAVE_RATING_USER_DOES_NOT_EXIST)
                     .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
         }
         Optional<Movies> movie = movieRepository.findByNameIgnoreCaseAndReleaseYear(rating.getMovie(), rating.getYear());
@@ -74,6 +70,44 @@ public class RatingService {
         if (ratedMovieOptional.isEmpty()) {
             MovieRating save = ratingRepository.save(MovieRating.builder().user(u).movie(m).rating(rating.getRating()).build());
             obj = Mono.just(save);
+        } else {
+            return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
+                    .errorMessage(MovieConstant.CANNOT_SAVE_RATING_ALREADY_EXISTS)
+                    .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
+        }
+        return obj.map(o -> RatingResponse.builder().id(o.getId()).rating(o.getRating()).movie(rating.getMovie()).year(rating.getYear()).build());
+    }
+
+    /**
+     * update the Rating if already exists
+     *
+     * @param rating
+     * @param userId
+     * @return
+     */
+
+
+    public Mono<RatingResponse> updateRating(RatingRequest rating, String userId) {
+        Optional<Users> user = userRepository.findByUserId(userId);
+        if (user.isEmpty()) {
+            return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
+                    .errorMessage(MovieConstant.CANNOT_SAVE_RATING_USER_DOES_NOT_EXIST)
+                    .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
+        }
+        Optional<Movies> movie = movieRepository.findByNameIgnoreCaseAndReleaseYear(rating.getMovie(), rating.getYear());
+        if (movie.isEmpty()) {
+            return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
+                    .errorMessage(MovieConstant.CANNOT_SAVE_RATING_MOVIE_NAME_INCORRECT)
+                    .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
+        }
+        Movies m = movie.get();
+        Users u = user.get();
+        Optional<MovieRating> ratedMovieOptional = ratingRepository.findByMovieAndUser(m, u);
+        Mono<MovieRating> obj;
+        if (ratedMovieOptional.isEmpty()) {
+            return Mono.just(RatingResponse.builder().errorInfo(ErrorInfo.builder()
+                    .errorMessage(MovieConstant.CANNOT_UPDATE_RATING_DOES_NOT_EXISTS)
+                    .errorCode(MovieErrorCodeConstant.BAD_REQUEST_FOR_RATING).build()).build());
         } else {
             MovieRating ratedMovie = ratedMovieOptional.get();
             ratedMovie.setRating(rating.getRating());

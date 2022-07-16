@@ -21,7 +21,11 @@ public interface MovieConstant {
 	String BAD_REQUEST = "Bad Request, Please recheck the request.";
 	String RELOGIN = "Unauthorized Access, Please re-login.";
 	String MOVIE = "movie";
+	String RATING_VALIDATION = "rating value has to be a number below 10";
 	String YEAR = "year";
 	String CANNOT_SAVE_RATING_MOVIE_NAME_INCORRECT = "Bad Request, Cannot Save Rating: Movie name or year is incorrect";
-	String CANNOT_SAVE_RATING_USER_DOESNOT_EXIST = "Bad Request, Cannot Save Rating: User does not exist";
+	String CANNOT_SAVE_RATING_ALREADY_EXISTS = "Bad Request, Movie is already rated by the user";
+
+	String CANNOT_UPDATE_RATING_DOES_NOT_EXISTS = "Bad Request, Movie is not yet rated by the user";
+	String CANNOT_SAVE_RATING_USER_DOES_NOT_EXIST = "Bad Request, Cannot Save Rating: User does not exist";
 }
