@@ -23,7 +23,7 @@ uuid: <Some random value>
 GET /v1/api/movie HTTP/1.1
 Host: localhost:8080
 uuid: <Some random value>
-AccessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjI5OTMsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1NzgyMTE5MywiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.4H3SPTr8rHtUzAKowPrk_YwWhHpDCrM50FY4RRsLW4E
+AccessToken: <a valid token>
 movie: Titanic
 year: 1997
 ```
