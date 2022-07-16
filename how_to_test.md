@@ -22,7 +22,7 @@ uuid: <Some random value>
 ```
 GET /v1/api/movie HTTP/1.1
 Host: localhost:8080
-uuid: 23232
+uuid: <Some random value>
 AccessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjI5OTMsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1NzgyMTE5MywiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.4H3SPTr8rHtUzAKowPrk_YwWhHpDCrM50FY4RRsLW4E
 movie: Titanic
 year: 1997
@@ -32,8 +32,8 @@ year: 1997
 ```
 POST /v1/api/rating HTTP/1.1
 Host: localhost:8080
-uuid: 23232
-AccessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjE5MjcsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1NzgyMDEyNywiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.C7JKGnWWvnF5p9KJ3Js9Rp_Vqt51Q7wBh0gmQ40OUYw
+uuid: <Some random value>
+AccessToken: <a valid token>
 Content-Type: application/json
 {
 	"movie":"skippy",
@@ -46,8 +46,8 @@ Content-Type: application/json
 ```
 PUT /v1/api/rating HTTP/1.1
 Host: localhost:8080
-uuid: 23232
-AccessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjE5MjcsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1NzgyMDEyNywiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.C7JKGnWWvnF5p9KJ3Js9Rp_Vqt51Q7wBh0gmQ40OUYw
+uuid: <Some random value>
+AccessToken: <a valid token>
 Content-Type: application/json
 {
 	"movie":"skippy",
@@ -60,8 +60,8 @@ Content-Type: application/json
 ```
 GET /v1/api/top10 HTTP/1.1
 Host: localhost:8080
-uuid: 23232
-AccessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjE5MjcsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1NzgyMDEyNywiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.C7JKGnWWvnF5p9KJ3Js9Rp_Vqt51Q7wBh0gmQ40OUYw
+uuid: <Some random value>
+AccessToken: <a valid token>
 Content-Type: application/json
 
 ```
