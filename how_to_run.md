@@ -1,13 +1,13 @@
 # movie-api
 
-I have used spring-boot and gradle for managing the dependency. Hence, we can use below standard commands after checking out the project.
+It Uses spring-boot and gradle for managing the dependency. Hence, we can use below standard commands after checking out the project.
 
 ### Running in spring boot Jar
 Create Jar
 ```
 ./gradlew bootJar
 ```
-This application is packaged as a jar which has Tomcat 8 embedded. No Tomcat or JBoss installation is necessary.
+This application is packaged as a jar which has Tomcat embedded. No Tomcat or JBoss installation is necessary.
 
 1. Import the project as existing gradle project.
 2. Make sure you are using JDK 1.11 and Gradle
@@ -29,11 +29,11 @@ This application is packaged as a jar which has Tomcat 8 embedded. No Tomcat or 
 ## Refresh dependencies (if needed)
 gradle build --refresh-dependencies
 
-## Run application
+## Run application 
 ./gradlew :bootRun
 
 ## Run all test cases
-./gradlew :bootRun
+./gradlew :test
 
 
 

@@ -5,7 +5,7 @@ I have used springboot with web-flux, trying to make the movie API's as reactive
 In this solution I have used H2 databases, The database gets initialised with the help of JPA and the seed sql queries.
 I have also used spring caching feature to avoid additional omdb api call, considering the omdb responses are not changing in real time. Hence, it is considered safe to be cached at application level.
 
-#Diagram
+![Screenshot](./solution.png)
 
 
 
