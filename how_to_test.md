@@ -1,28 +1,6 @@
 # movie-api
 
-The application uses h2 in-memory database, So once the application is booted up the console can be accessed at
-```
-http://localhost:8080/h2-console 
-un: sa
-pwd: password
-```
 
-The application has spring doc open-api library to expose swagger documention out of the box, which can be accessed at
-```
-http://localhost:8080/swagger-ui/index.html 
-```
-
-
-This application serves the below functionality:
-
-* Authentication of end user is done by calling /v1/api/login and provides JWT token (Access token) in return.
-* Access token needs to be provided in header for accessing all other movie API.
-* All APIs take UUID (used in request logging, for tracing purpose)
-* After successful login, end user needs to perform the following using exposed rest API's
-* Also attached here the postman bundle movie-api.postman_collection.json
-* Exposes API to Check if a movie won oscar or not, by providing the movie name and year of release as input
-* Exposes API to store/update user movie rating .
-* Provides a list of 10 top-rated movies ordered by box office value.
 
 ```
 To perform login use below username and password pair to create the Authorization token:

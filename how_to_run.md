@@ -1,6 +1,6 @@
 # movie-api
 
-It Uses spring-boot and gradle for managing the dependency. Hence, we can use below standard commands after checking out the project.
+This app uses gradle for managing the dependency. Hence, we can use below standard commands after checking out the project.
 
 ### Running in spring boot Jar
 Create Jar
@@ -25,6 +25,13 @@ This application is packaged as a jar which has Tomcat embedded. No Tomcat or JB
 4. Application starts on default 8080 port. Browse the following URL to view the basic swagger documentation.
 ```
  http://localhost:8080/swagger-ui.html
+```
+
+The application uses h2 in-memory database, So once the application is booted up the console can be accessed at
+```
+http://localhost:8080/h2-console 
+un: sa
+pwd: password
 ```
 ## Refresh dependencies (if needed)
 gradle build --refresh-dependencies
