@@ -1,0 +1,155 @@
+{
+	"variables": [],
+	"info": {
+		"name": "movie-api",
+		"_postman_id": "f6048edb-c8c4-e89c-a8a7-d7eb13423f28",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"url": "http://localhost:8080/v1/api/login",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic bWlrZUBkb2UuY29tOm1pa2U=",
+						"description": ""
+					},
+					{
+						"key": "uuid",
+						"value": "23232",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Login"
+			},
+			"response": []
+		},
+		{
+			"name": "Movie",
+			"request": {
+				"url": "http://localhost:8080/v1/api/movie",
+				"method": "GET",
+				"header": [
+					{
+						"key": "uuid",
+						"value": "23232",
+						"description": ""
+					},
+					{
+						"key": "AccessToken",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjI5OTMsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1NzgyMTE5MywiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.4H3SPTr8rHtUzAKowPrk_YwWhHpDCrM50FY4RRsLW4E",
+						"description": ""
+					},
+					{
+						"key": "movie",
+						"value": "Titanic",
+						"description": ""
+					},
+					{
+						"key": "year",
+						"value": "1997",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Get movie details, if the movie get oscar or not"
+			},
+			"response": []
+		},
+		{
+			"name": "Rating",
+			"request": {
+				"url": "http://localhost:8080/v1/api/rating",
+				"method": "POST",
+				"header": [
+					{
+						"key": "uuid",
+						"value": "23232",
+						"description": ""
+					},
+					{
+						"key": "AccessToken",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc5ODA0MTIsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1Nzk3ODYxMiwiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.75nOiouS6w46Gsy7WMWGXR8-FH4BcxMxROLCEESOFRo",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"movie\":\"skippy\",\n\t\"rating\": 9.90,\n\t\"year\":1931\n}"
+				},
+				"description": "give rating to a movie"
+			},
+			"response": []
+		},
+		{
+			"name": "Rating",
+			"request": {
+				"url": "http://localhost:8080/v1/api/rating",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "uuid",
+						"value": "23232",
+						"description": ""
+					},
+					{
+						"key": "AccessToken",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjE5MjcsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1NzgyMDEyNywiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.C7JKGnWWvnF5p9KJ3Js9Rp_Vqt51Q7wBh0gmQ40OUYw",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"movie\":\"skippy\",\n\t\"rating\": 10000000000.90,\n\t\"year\":1931\n}"
+				},
+				"description": "give rating to a movie"
+			},
+			"response": []
+		},
+		{
+			"name": "top 10",
+			"request": {
+				"url": "http://localhost:8080/v1/api/top10",
+				"method": "GET",
+				"header": [
+					{
+						"key": "uuid",
+						"value": "23232",
+						"description": ""
+					},
+					{
+						"key": "AccessToken",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTc4MjE5MjcsImlzcyI6Imh0dHBzOi8vYmlyYWouYXV0aC5zZXJ2aWNlLmNvbSIsImlhdCI6MTY1NzgyMDEyNywiYXVkIjoiaHR0cHM6Ly9iaXJhai5tb3ZpZS5hcGkuY29tL2FjY2VzcyIsInVzZXJJZCI6Im1pa2VAZG9lLmNvbSJ9.C7JKGnWWvnF5p9KJ3Js9Rp_Vqt51Q7wBh0gmQ40OUYw",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"rating\": 6.99\n}"
+				},
+				"description": "get a list of 10 top-rated movies ordered by\rbox office value."
+			},
+			"response": []
+		}
+	]
+}
